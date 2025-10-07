@@ -6,7 +6,7 @@ interface TimeDisplayProps {
   isActive: boolean;
   playerNumber: 1 | 2;
   onPress: () => void;
-  isGameStarted: boolean; // Добавляем пропс isGameStarted
+  isGameStarted: boolean;
 }
 
 const TimeDisplay: React.FC<TimeDisplayProps> = ({
@@ -41,6 +41,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
   return (
     <div
       style={{
+        width: '100%',
         height: '50vh',
         display: 'flex',
         flexDirection: 'column',
@@ -62,7 +63,6 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
         fontSize: 'clamp(2rem, 10vw, 4rem)',
         fontWeight: 'bold',
         color: getTextColor(),
-        transform: playerNumber === 1 ? 'rotate(180deg)' : 'none',
         textAlign: 'center',
         margin: '10px'
       }}>
@@ -71,8 +71,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
       <div style={{
         fontSize: '1rem',
         color: '#666',
-        marginTop: '10px',
-        transform: playerNumber === 1 ? 'rotate(180deg)' : 'none'
+        marginTop: '10px'
       }}>
         {isRunning ? '▶' : '⏸'} Игрок {playerNumber}
         {isActive && !isRunning && isGameStarted && ' (активный)'}
