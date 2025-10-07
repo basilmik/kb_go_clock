@@ -1,0 +1,103 @@
+import React, { useState } from 'react';
+import useGameClock from './hooks/useGameClock';
+import TimeDisplay from './components/TimeDisplay';
+import ControlPanel from './components/ControlPanel';
+import ControlButton from './components/ControlButton';
+import './App.css';
+
+const App: React.FC = () => {
+  const {
+    state,
+    startGame,
+    pauseGame,
+    switchPlayer,
+    setActivePlayer,
+    setMainTime,
+    setAdditionalTime,
+    setByoyomiPeriods,
+    setMode,
+    copySettings,
+    resetGame
+  } = useGameClock();
+
+  const [showSettings, setShowSettings] = useState(false);
+
+  const handlePlayerPress = (player: 1 | 2) => {
+    if (state.isGameStarted) {
+      switchPlayer();
+    }
+  };
+
+  const handleMainButtonClick = () => {
+    if (state.isGameStarted) {
+      pauseGame();
+    } else {
+      startGame();
+    }
+  };
+
+  return (
+    <div className="app">
+      <div className="time-displays">
+        <TimeDisplay
+          time={state.player1.currentTime}
+          isRunning={state.player1.isRunning}
+          isActive={state.activePlayer === 1}
+          playerNumber={1}
+          onPress={() => handlePlayerPress(1)}
+          isGameStarted={state.isGameStarted} // Добавлено
+        />
+        
+        {/* Центральная кнопка управления */}
+        <ControlButton
+          isGameStarted={state.isGameStarted}
+          onMainButtonClick={handleMainButtonClick}
+          onSettingsButtonClick={() => setShowSettings(true)}
+        />
+        
+        <TimeDisplay
+          time={state.player2.currentTime}
+          isRunning={state.player2.isRunning}
+          isActive={state.activePlayer === 2}
+          playerNumber={2}
+          onPress={() => handlePlayerPress(2)}
+          isGameStarted={state.isGameStarted} // Добавлено
+        />
+      </div>
+
+      {/* Модальное окно настроек */}
+      {showSettings && (
+        <div className="settings-overlay">
+          <div className="settings-modal">
+            <div className="settings-header">
+              <h2>Настройки часов</h2>
+              <button 
+                className="close-button"
+                onClick={() => setShowSettings(false)}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <ControlPanel
+              mode={state.mode}
+              onModeChange={setMode}
+              onMainTimeSet={setMainTime}
+              onAdditionalTimeSet={setAdditionalTime}
+              onByoyomiPeriodsSet={setByoyomiPeriods}
+              onCopySettings={copySettings}
+              onStart={startGame}
+              onPause={pauseGame}
+              onReset={resetGame}
+              isGameStarted={state.isGameStarted}
+              activePlayer={state.activePlayer}
+              onPlayerSelect={setActivePlayer}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default App;

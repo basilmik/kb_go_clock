@@ -1,0 +1,36 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'  # Укажи свою версию Node.js
+
+    - name: Install dependencies
+      run:
+        npm install 
+        npm ci
+        
+    - name: Build project
+      run: npm run build
+        
+    - name: Deploy to server
+      uses: Burnett01/rsync-deployments@7.0.2
+      with:
+        switches: -avzr --delete -vvv
+        path: ./
+        remote_path: "/opt/kb_go_clock/"
+        remote_host: ${{ secrets.SSH_HOST }}
+        remote_user: ${{ secrets.SSH_USER }}
+        remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
