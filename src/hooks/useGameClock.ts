@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { GameClockState, TimeControlMode, PlayerTime } from '../types';
+import type { GameClockState, TimeControlMode, PlayerTime } from '../types';
 
 const useGameClock = () => {
   const [state, setState] = useState<GameClockState>({
@@ -20,11 +20,11 @@ const useGameClock = () => {
       usedPeriods: 0
     },
     mode: 'absolute',
-    activePlayer: null,
+    activePlayer: 1, // По умолчанию первый игрок активен
     isGameStarted: false
   });
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<number | null>(null); // Изменено на number
   const lastUpdateTimeRef = useRef<number>(0);
   const audioContextRef = useRef<AudioContext | null>(null);
   const soundsRef = useRef<Map<string, AudioBuffer>>(new Map());
@@ -33,25 +33,6 @@ const useGameClock = () => {
   const initAudio = useCallback(async () => {
     if (typeof window !== 'undefined') {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
-      // Здесь нужно загрузить аудиофайлы
-      // await loadSound('30s', '/sounds/30s.wav');
-      // await loadSound('10s', '/sounds/10s.wav');
-      // await loadSound('5s', '/sounds/5s.wav');
-      // await loadSound('switch', '/sounds/switch.wav');
-    }
-  }, []);
-
-  const loadSound = useCallback(async (name: string, url: string) => {
-    if (!audioContextRef.current) return;
-
-    try {
-      const response = await fetch(url);
-      const arrayBuffer = await response.arrayBuffer();
-      const audioBuffer = await audioContextRef.current.decodeAudioData(arrayBuffer);
-      soundsRef.current.set(name, audioBuffer);
-    } catch (error) {
-      console.error(`Failed to load sound ${name}:`, error);
     }
   }, []);
 
@@ -126,7 +107,8 @@ const useGameClock = () => {
 
   const startTimer = useCallback((player: 1 | 2) => {
     lastUpdateTimeRef.current = Date.now();
-    timerRef.current = setInterval(() => updateTimer(player), 100);
+    // Используем window.setInterval вместо NodeJS.setInterval
+    timerRef.current = window.setInterval(() => updateTimer(player), 100);
     
     setState(prevState => ({
       ...prevState,
@@ -175,24 +157,35 @@ const useGameClock = () => {
   const switchPlayer = useCallback(() => {
     if (!state.activePlayer) return;
 
+    // Останавливаем таймер текущего игрока
     stopTimer();
-    playSound('switch');
 
+    // Переключаем на следующего игрока
     const nextPlayer = state.activePlayer === 1 ? 2 : 1;
     
-    setState(prev => ({ ...prev, activePlayer: nextPlayer }));
+    setState(prev => ({ 
+      ...prev, 
+      activePlayer: nextPlayer 
+    }));
     
+    // Если игра запущена, запускаем таймер следующего игрока
     if (state.isGameStarted) {
       startTimer(nextPlayer);
     }
-  }, [state.activePlayer, state.isGameStarted, stopTimer, startTimer, playSound]);
+  }, [state.activePlayer, state.isGameStarted, stopTimer, startTimer]);
 
   const setActivePlayer = useCallback((player: 1 | 2) => {
     if (state.activePlayer === player) return;
     
+    // Останавливаем таймер если он запущен
     stopTimer();
-    setState(prev => ({ ...prev, activePlayer: player }));
     
+    setState(prev => ({ 
+      ...prev, 
+      activePlayer: player 
+    }));
+    
+    // Если игра запущена, запускаем таймер нового активного игрока
     if (state.isGameStarted) {
       startTimer(player);
     }
@@ -272,7 +265,7 @@ const useGameClock = () => {
         usedPeriods: 0
       },
       mode: 'absolute',
-      activePlayer: null,
+      activePlayer: 1, // При сбросе тоже устанавливаем первого игрока активным
       isGameStarted: false
     });
   }, [clearTimer]);

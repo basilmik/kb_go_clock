@@ -12,12 +12,12 @@ const ControlButton: React.FC<ControlButtonProps> = ({
   onSettingsButtonClick
 }) => {
   const [showSettingsHint, setShowSettingsHint] = useState(false);
-  const longPressTimer = useRef<number | null>(null); // Исправлено: number вместо NodeJS.Timeout
+  const longPressTimer = useRef<number | null>(null);
   const buttonPressed = useRef(false);
 
   const handleSettingsTouchStart = useCallback(() => {
     buttonPressed.current = true;
-    longPressTimer.current = window.setTimeout(() => { // Исправлено: window.setTimeout
+    longPressTimer.current = window.setTimeout(() => {
       if (buttonPressed.current) {
         onSettingsButtonClick();
         setShowSettingsHint(false);
@@ -30,23 +30,25 @@ const ControlButton: React.FC<ControlButtonProps> = ({
   const handleSettingsTouchEnd = useCallback(() => {
     buttonPressed.current = false;
     if (longPressTimer.current) {
-      window.clearTimeout(longPressTimer.current); // Исправлено: window.clearTimeout
+      window.clearTimeout(longPressTimer.current);
       longPressTimer.current = null;
     }
-    window.setTimeout(() => setShowSettingsHint(false), 500); // Исправлено: window.setTimeout
+    window.setTimeout(() => setShowSettingsHint(false), 500);
   }, []);
 
   return (
-    <div className="control-buttons-container">
-      {/* Основная кнопка старта/стопа */}
-      <button
-        className={`main-control-button ${isGameStarted ? 'stop' : 'start'}`}
-        onClick={onMainButtonClick}
-      >
-        {isGameStarted ? '⏹️' : '▶️'}
-      </button>
+    <>
+      {/* Основная кнопка старта/стопа - в центре */}
+      <div className="control-buttons-container">
+        <button
+          className={`main-control-button ${isGameStarted ? 'stop' : 'start'}`}
+          onClick={onMainButtonClick}
+        >
+          {isGameStarted ? '⏹️' : '▶️'}
+        </button>
+      </div>
 
-      {/* Кнопка настроек (полукруг) */}
+      {/* Кнопка настроек - отдельно у правого края */}
       <div className="settings-button-container">
         <button
           className="settings-button"
@@ -64,7 +66,7 @@ const ControlButton: React.FC<ControlButtonProps> = ({
           )}
         </button>
       </div>
-    </div>
+    </>
   );
 };
 

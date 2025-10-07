@@ -1,4 +1,5 @@
 import React from 'react';
+import type { PlayerTime, TimeControlMode } from '../types';
 
 interface TimeDisplayProps {
   time: number;
@@ -7,6 +8,8 @@ interface TimeDisplayProps {
   playerNumber: 1 | 2;
   onPress: () => void;
   isGameStarted: boolean;
+  mode: TimeControlMode;
+  playerTime: PlayerTime;
 }
 
 const TimeDisplay: React.FC<TimeDisplayProps> = ({
@@ -15,7 +18,9 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
   isActive,
   playerNumber,
   onPress,
-  isGameStarted
+  isGameStarted,
+  mode,
+  playerTime
 }) => {
   const formatTime = (seconds: number): string => {
     const absSeconds = Math.max(0, Math.abs(seconds));
@@ -38,6 +43,72 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
     return '#333';
   };
 
+  // Отображение дополнительной информации в зависимости от режима
+  const renderAdditionalInfo = () => {
+    if (!isGameStarted) {
+      // Перед началом игры показываем настройки
+      switch (mode) {
+        case 'fischer':
+          return (
+            <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
+              +{playerTime.additionalTime} сек
+            </div>
+          );
+        case 'byoyomi':
+          return (
+            <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
+              {playerTime.byoyomiPeriods} период(ов) × {playerTime.additionalTime} сек
+            </div>
+          );
+        default:
+          return null;
+      }
+    } else {
+      // Во время игры показываем текущее состояние
+      switch (mode) {
+        case 'byoyomi':
+          const remainingPeriods = playerTime.byoyomiPeriods - playerTime.usedPeriods;
+          if (time <= playerTime.additionalTime && remainingPeriods > 0) {
+            return (
+              <div style={{ fontSize: '0.9rem', color: '#ff9800', marginTop: '5px' }}>
+                Период {playerTime.usedPeriods + 1}/{playerTime.byoyomiPeriods}
+              </div>
+            );
+          }
+          return (
+            <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
+              Осталось периодов: {remainingPeriods}
+            </div>
+          );
+        case 'fischer':
+          if (isActive) {
+            return (
+              <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
+                +{playerTime.additionalTime} сек после хода
+              </div>
+            );
+          }
+          return null;
+        default:
+          return null;
+      }
+    }
+  };
+
+  // Отображение информации о основном времени перед игрой
+  const renderMainTimeInfo = () => {
+    if (!isGameStarted) {
+      const mainMinutes = Math.floor(playerTime.mainTime / 60);
+      const mainSeconds = playerTime.mainTime % 60;
+      return (
+        <div style={{ fontSize: '0.8rem', color: '#888', marginBottom: '5px' }}>
+          Основное: {mainMinutes}:{mainSeconds.toString().padStart(2, '0')}
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div
       style={{
@@ -50,15 +121,19 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
         backgroundColor: getBackgroundColor(),
         transform: playerNumber === 1 ? 'rotate(180deg)' : 'none',
         transition: 'all 0.3s ease',
-        cursor: isGameStarted ? 'pointer' : 'default',
+        cursor: 'pointer', // Всегда показываем курсор-указатель
         userSelect: 'none',
         borderBottom: playerNumber === 1 ? '2px solid #ddd' : 'none',
         borderTop: playerNumber === 2 ? '2px solid #ddd' : 'none',
         position: 'relative',
-        zIndex: 1
+        zIndex: 1,
+        padding: '10px',
+        boxSizing: 'border-box'
       }}
       onClick={onPress}
     >
+      {renderMainTimeInfo()}
+      
       <div style={{
         fontSize: 'clamp(2rem, 10vw, 4rem)',
         fontWeight: 'bold',
@@ -68,13 +143,17 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
       }}>
         {formatTime(time)}
       </div>
+      
+      {renderAdditionalInfo()}
+      
       <div style={{
         fontSize: '1rem',
         color: '#666',
         marginTop: '10px'
       }}>
         {isRunning ? '▶' : '⏸'} Игрок {playerNumber}
-        {isActive && !isRunning && isGameStarted && ' (активный)'}
+        {isActive && ' (активный)'}
+        {!isGameStarted && isActive && ' (готов)'}
       </div>
     </div>
   );

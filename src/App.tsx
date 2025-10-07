@@ -23,8 +23,13 @@ const App: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
 
   const handlePlayerPress = (player: 1 | 2) => {
-    if (state.isGameStarted) {
+    // Разрешаем переключать игроков в любом состоянии (даже когда игра не начата)
+    // Только если есть активный игрок и нажали не на текущего активного
+    if (state.activePlayer && state.activePlayer !== player) {
       switchPlayer();
+    } else if (!state.activePlayer) {
+      // Если нет активного игрока, устанавливаем нажатого
+      setActivePlayer(player);
     }
   };
 
@@ -32,7 +37,14 @@ const App: React.FC = () => {
     if (state.isGameStarted) {
       pauseGame();
     } else {
-      startGame();
+      // Перед стартом проверяем, что есть активный игрок
+      if (state.activePlayer) {
+        startGame();
+      } else {
+        // Если нет активного игрока, устанавливаем первого и начинаем
+        setActivePlayer(1);
+        startGame();
+      }
     }
   };
 
@@ -45,7 +57,9 @@ const App: React.FC = () => {
           isActive={state.activePlayer === 1}
           playerNumber={1}
           onPress={() => handlePlayerPress(1)}
-          isGameStarted={state.isGameStarted} // Добавлено
+          isGameStarted={state.isGameStarted}
+          mode={state.mode}
+          playerTime={state.player1}
         />
         
         {/* Центральная кнопка управления */}
@@ -61,7 +75,9 @@ const App: React.FC = () => {
           isActive={state.activePlayer === 2}
           playerNumber={2}
           onPress={() => handlePlayerPress(2)}
-          isGameStarted={state.isGameStarted} 
+          isGameStarted={state.isGameStarted}
+          mode={state.mode}
+          playerTime={state.player2}
         />
       </div>
 
@@ -92,6 +108,8 @@ const App: React.FC = () => {
               isGameStarted={state.isGameStarted}
               activePlayer={state.activePlayer}
               onPlayerSelect={setActivePlayer}
+              player1={state.player1}
+              player2={state.player2}
             />
           </div>
         </div>

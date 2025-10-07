@@ -28,7 +28,7 @@ html, body, #root {
   height: 100%;
 }
 
-/* Контейнер для кнопок управления */
+/* Контейнер для основной кнопки управления */
 .control-buttons-container {
   position: absolute;
   top: 50%;
@@ -37,7 +37,7 @@ html, body, #root {
   z-index: 10;
   display: flex;
   align-items: center;
-  gap: 20px;
+  justify-content: center;
 }
 
 /* Основная кнопка старта/стопа */
@@ -67,41 +67,33 @@ html, body, #root {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Контейнер для кнопки настроек */
+/* Контейнер для кнопки настроек - ОТДЕЛЬНО от основной кнопки */
 .settings-button-container {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: 10;
 }
 
-/* Кнопка настроек (полукруг) */
+/* Кнопка настроек (полукруг у правого края) */
 .settings-button {
   width: 60px;
   height: 60px;
-  border-radius: 50%;
+  border-radius: 60px 0 0 60px; /* Только левые углы скруглены */
   border: none;
   background: linear-gradient(145deg, #2196f3, #1976d2);
   color: white;
   font-size: 1.5rem;
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: -3px 0 10px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  overflow: visible; /* Меняем hidden на visible */
+  overflow: visible;
 }
-
-/* УДАЛЕНО: белый прямоугольник */
-/* .settings-button-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -30px;
-  width: 30px;
-  height: 60px;
-  background: white;
-  z-index: 5;
-} */
 
 .settings-button:active {
   transform: scale(0.95);
@@ -233,6 +225,7 @@ html, body, #root {
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: #333;
 }
 
 .player-button.active {
@@ -244,8 +237,10 @@ html, body, #root {
 .player-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  color: #999;
 }
 
+/* Стили для выпадающего списка */
 .mode-select {
   width: 100%;
   padding: 10px;
@@ -253,6 +248,18 @@ html, body, #root {
   border-radius: 6px;
   font-size: 1rem;
   background: white;
+  color: #333;
+}
+
+.mode-select option {
+  background: white;
+  color: #333;
+}
+
+.mode-select:disabled {
+  background: #f5f5f5;
+  color: #999;
+  border-color: #eee;
 }
 
 .players-settings {
@@ -300,6 +307,35 @@ html, body, #root {
   border: 1px solid #ddd;
   border-radius: 4px;
   text-align: center;
+  background: white;
+  color: #333;
+}
+
+.time-inputs input:disabled,
+.additional-time input:disabled,
+.byoyomi-periods input:disabled {
+  background: #f5f5f5;
+  color: #999;
+  border-color: #eee;
+}
+
+/* Скрытие стрелочек в числовых инпутах */
+.time-inputs input[type="number"],
+.additional-time input[type="number"], 
+.byoyomi-periods input[type="number"] {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.time-inputs input[type="number"]::-webkit-outer-spin-button,
+.time-inputs input[type="number"]::-webkit-inner-spin-button,
+.additional-time input[type="number"]::-webkit-outer-spin-button,
+.additional-time input[type="number"]::-webkit-inner-spin-button,
+.byoyomi-periods input[type="number"]::-webkit-outer-spin-button,
+.byoyomi-periods input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .additional-time,
@@ -377,24 +413,11 @@ html, body, #root {
     font-size: 1.7rem;
   }
   
-.settings-button {
-  width: 60px;
-  height: 60px;
-  border-radius: 60px 0 0 60px; /* Делаем только левые углы скругленными */
-  border: none;
-  background: linear-gradient(145deg, #2196f3, #1976d2);
-  color: white;
-  font-size: 1.5rem;
-  cursor: pointer;
-  box-shadow: -3px 0 10px rgba(0, 0, 0, 0.2); /* Тень только слева */
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: -30px; /* Сдвигаем влево чтобы скрыть правую половину */
-  position: relative;
-  overflow: visible;
-}
+  .settings-button {
+    width: 50px;
+    height: 50px;
+    font-size: 1.3rem;
+  }
   
   .players-settings {
     grid-template-columns: 1fr;
@@ -408,10 +431,6 @@ html, body, #root {
 
 /* Стили для мобильных устройств */
 @media (max-width: 480px) {
-  .control-buttons-container {
-    gap: 15px;
-  }
-  
   .main-control-button {
     width: 60px;
     height: 60px;
@@ -427,5 +446,18 @@ html, body, #root {
   .settings-hint {
     font-size: 0.7rem;
     top: -35px;
+  }
+  
+  .control-panel {
+    padding: 15px;
+  }
+  
+  .control-section {
+    padding: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .player-settings {
+    padding: 12px;
   }
 }
