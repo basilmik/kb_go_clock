@@ -61,7 +61,7 @@ const App: React.FC = () => {
           isActive={state.activePlayer === 2}
           playerNumber={2}
           onPress={() => handlePlayerPress(2)}
-          isGameStarted={state.isGameStarted} // Добавлено
+          isGameStarted={state.isGameStarted} 
         />
       </div>
 
