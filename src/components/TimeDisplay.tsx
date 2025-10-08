@@ -43,6 +43,17 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
     return '#333';
   };
 
+  // Отображение информации о основном времени (всегда)
+  const renderMainTimeInfo = () => {
+    const mainMinutes = Math.floor(playerTime.mainTime / 60);
+    const mainSeconds = playerTime.mainTime % 60;
+    return (
+      <div style={{ fontSize: '0.8rem', color: '#888', marginBottom: '5px' }}>
+        Основное: {mainMinutes}:{mainSeconds.toString().padStart(2, '0')}
+      </div>
+    );
+  };
+
   // Отображение дополнительной информации в зависимости от режима
   const renderAdditionalInfo = () => {
     if (!isGameStarted) {
@@ -67,17 +78,20 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
       // Во время игры показываем текущее состояние
       switch (mode) {
         case 'byoyomi':
-          const remainingPeriods = playerTime.byoyomiPeriods - playerTime.usedPeriods;
-          if (time <= playerTime.additionalTime && remainingPeriods > 0) {
-            return (
-              <div style={{ fontSize: '0.9rem', color: '#ff9800', marginTop: '5px' }}>
-                Период {playerTime.usedPeriods + 1}/{playerTime.byoyomiPeriods}
-              </div>
-            );
+          let displayPeriods;
+          if (playerTime.usedPeriods === 0) {
+            // Основное время - показываем все периоды
+            displayPeriods = playerTime.byoyomiPeriods;
+          } else {
+            // В периодах бё-ёми - показываем оставшиеся периоды + 1
+            // usedPeriods = 1 (3-й период) → displayPeriods = 3
+            // usedPeriods = 2 (2-й период) → displayPeriods = 2  
+            // usedPeriods = 3 (1-й период) → displayPeriods = 1
+            displayPeriods = playerTime.byoyomiPeriods - playerTime.usedPeriods + 1;
           }
           return (
             <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
-              Осталось периодов: {remainingPeriods}
+              Периодов: {displayPeriods}
             </div>
           );
         case 'fischer':
@@ -95,20 +109,6 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
     }
   };
 
-  // Отображение информации о основном времени перед игрой
-  const renderMainTimeInfo = () => {
-    if (!isGameStarted) {
-      const mainMinutes = Math.floor(playerTime.mainTime / 60);
-      const mainSeconds = playerTime.mainTime % 60;
-      return (
-        <div style={{ fontSize: '0.8rem', color: '#888', marginBottom: '5px' }}>
-          Основное: {mainMinutes}:{mainSeconds.toString().padStart(2, '0')}
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <div
       style={{
@@ -121,7 +121,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
         backgroundColor: getBackgroundColor(),
         transform: playerNumber === 1 ? 'rotate(180deg)' : 'none',
         transition: 'all 0.3s ease',
-        cursor: 'pointer', // Всегда показываем курсор-указатель
+        cursor: 'pointer',
         userSelect: 'none',
         borderBottom: playerNumber === 1 ? '2px solid #ddd' : 'none',
         borderTop: playerNumber === 2 ? '2px solid #ddd' : 'none',
@@ -145,16 +145,6 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
       </div>
       
       {renderAdditionalInfo()}
-      
-      <div style={{
-        fontSize: '1rem',
-        color: '#666',
-        marginTop: '10px'
-      }}>
-        {isRunning ? '▶' : '⏸'} Игрок {playerNumber}
-        {isActive && ' (активный)'}
-        {!isGameStarted && isActive && ' (готов)'}
-      </div>
     </div>
   );
 };

@@ -5,7 +5,7 @@ const useGameClock = () => {
   const [state, setState] = useState<GameClockState>({
     player1: {
       mainTime: 300,
-      additionalTime: 5,
+      additionalTime: 30,
       byoyomiPeriods: 5,
       currentTime: 300,
       isRunning: false,
@@ -13,37 +13,19 @@ const useGameClock = () => {
     },
     player2: {
       mainTime: 300,
-      additionalTime: 5,
+      additionalTime: 30,
       byoyomiPeriods: 5,
       currentTime: 300,
       isRunning: false,
       usedPeriods: 0
     },
     mode: 'absolute',
-    activePlayer: 1, // По умолчанию первый игрок активен
+    activePlayer: 1,
     isGameStarted: false
   });
 
-  const timerRef = useRef<number | null>(null); // Изменено на number
+  const timerRef = useRef<number | null>(null);
   const lastUpdateTimeRef = useRef<number>(0);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const soundsRef = useRef<Map<string, AudioBuffer>>(new Map());
-
-  // Инициализация аудио
-  const initAudio = useCallback(async () => {
-    if (typeof window !== 'undefined') {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-    }
-  }, []);
-
-  const playSound = useCallback((name: string) => {
-    if (!audioContextRef.current || !soundsRef.current.has(name)) return;
-
-    const source = audioContextRef.current.createBufferSource();
-    source.buffer = soundsRef.current.get(name)!;
-    source.connect(audioContextRef.current.destination);
-    source.start();
-  }, []);
 
   // Таймер
   const updateTimer = useCallback((player: 1 | 2) => {
@@ -55,32 +37,53 @@ const useGameClock = () => {
       const playerKey = `player${player}` as keyof GameClockState;
       const playerState = prevState[playerKey] as PlayerTime;
       
-      const previousTime = Math.ceil(playerState.currentTime);
       const newTime = playerState.currentTime - elapsed;
-
-      // Проверка звуковых уведомлений
-      if (previousTime > 30 && Math.ceil(newTime) === 30) {
-        playSound('30s');
-      } else if (previousTime > 10 && Math.ceil(newTime) <= 10 && Math.ceil(newTime) > 0) {
-        playSound('10s');
-      } else if (previousTime > 5 && Math.ceil(newTime) <= 5 && Math.ceil(newTime) > 0) {
-        playSound('5s');
-      }
 
       // Проверка окончания времени
       if (newTime <= 0) {
-        if (prevState.mode === 'byoyomi' && playerState.usedPeriods < playerState.byoyomiPeriods) {
-          // Переход в бё-ёми
+        if (prevState.mode === 'byoyomi' && playerState.usedPeriods === 0) {
+          // Первый переход в бё-ёми - основное время полностью закончилось
+          // Начинаем последний период (3-й при 3 периодах)
+          const remainingPeriods = playerState.byoyomiPeriods - 1;
           return {
             ...prevState,
             [playerKey]: {
               ...playerState,
               currentTime: playerState.additionalTime,
-              usedPeriods: playerState.usedPeriods + 1
+              usedPeriods: 1 // Начинаем использовать периоды
             }
           };
+        } else if (prevState.mode === 'byoyomi' && playerState.usedPeriods > 0) {
+          // Тратится период в бё-ёми
+          const newUsedPeriods = playerState.usedPeriods + 1;
+          
+          // Если после траты периода остались еще периоды
+          if (newUsedPeriods <= playerState.byoyomiPeriods) {
+            return {
+              ...prevState,
+              [playerKey]: {
+                ...playerState,
+                currentTime: playerState.additionalTime, // Начинаем следующий период
+                usedPeriods: newUsedPeriods
+              }
+            };
+          } else {
+            // Все периоды израсходованы - время вышло
+            clearTimer();
+            return {
+              ...prevState,
+              isGameStarted: false,
+              activePlayer: null,
+              [playerKey]: {
+                ...playerState,
+                isRunning: false,
+                currentTime: 0,
+                usedPeriods: newUsedPeriods
+              }
+            };
+          }
         } else {
-          // Время окончательно истекло
+          // Время окончательно истекло (в абсолютном режиме)
           clearTimer();
           return {
             ...prevState,
@@ -103,11 +106,14 @@ const useGameClock = () => {
         }
       };
     });
-  }, [playSound]);
+  }, []);
 
   const startTimer = useCallback((player: 1 | 2) => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    
     lastUpdateTimeRef.current = Date.now();
-    // Используем window.setInterval вместо NodeJS.setInterval
     timerRef.current = window.setInterval(() => updateTimer(player), 100);
     
     setState(prevState => ({
@@ -115,6 +121,10 @@ const useGameClock = () => {
       [`player${player}`]: {
         ...prevState[`player${player}`],
         isRunning: true
+      },
+      [`player${player === 1 ? 2 : 1}`]: {
+        ...prevState[`player${player === 1 ? 2 : 1}`],
+        isRunning: false
       }
     }));
   }, [updateTimer]);
@@ -128,17 +138,17 @@ const useGameClock = () => {
 
   const stopTimer = useCallback(() => {
     clearTimer();
-    setState(prevState => {
-      if (!prevState.activePlayer) return prevState;
-      
-      return {
-        ...prevState,
-        [`player${prevState.activePlayer}`]: {
-          ...prevState[`player${prevState.activePlayer}`],
-          isRunning: false
-        }
-      };
-    });
+    setState(prevState => ({
+      ...prevState,
+      player1: {
+        ...prevState.player1,
+        isRunning: false
+      },
+      player2: {
+        ...prevState.player2,
+        isRunning: false
+      }
+    }));
   }, [clearTimer]);
 
   // Публичные методы
@@ -160,36 +170,64 @@ const useGameClock = () => {
     // Останавливаем таймер текущего игрока
     stopTimer();
 
-    // Переключаем на следующего игрока
-    const nextPlayer = state.activePlayer === 1 ? 2 : 1;
-    
-    setState(prev => ({ 
-      ...prev, 
-      activePlayer: nextPlayer 
-    }));
-    
-    // Если игра запущена, запускаем таймер следующего игрока
+    // Логика для разных режимов
     if (state.isGameStarted) {
+      setState(prevState => {
+        const currentPlayerKey = `player${state.activePlayer}` as keyof GameClockState;
+        const currentPlayerState = prevState[currentPlayerKey] as PlayerTime;
+        const nextPlayer = state.activePlayer === 1 ? 2 : 1;
+        
+        let updatedState = { ...prevState };
+
+        if (prevState.mode === 'fischer') {
+          // Режим Фишера - добавляем время текущему игроку
+          updatedState = {
+            ...updatedState,
+            [currentPlayerKey]: {
+              ...currentPlayerState,
+              currentTime: currentPlayerState.currentTime + currentPlayerState.additionalTime
+            }
+          };
+        } else if (prevState.mode === 'byoyomi' && currentPlayerState.usedPeriods > 0) {
+          // Режим бё-ёми - сбрасываем время на полную длительность периода
+          // ТОЛЬКО если игрок уже в бё-ёми (usedPeriods > 0)
+          updatedState = {
+            ...updatedState,
+            [currentPlayerKey]: {
+              ...currentPlayerState,
+              currentTime: currentPlayerState.additionalTime
+            }
+          };
+        }
+        
+        // Переключаем активного игрока
+        updatedState.activePlayer = nextPlayer;
+        
+        return updatedState;
+      });
+      
+      // Запускаем таймер следующего игрока
+      const nextPlayer = state.activePlayer === 1 ? 2 : 1;
       startTimer(nextPlayer);
+    } else {
+      // Если игра не запущена, просто переключаем активного игрока
+      const nextPlayer = state.activePlayer === 1 ? 2 : 1;
+      setState(prev => ({ 
+        ...prev, 
+        activePlayer: nextPlayer 
+      }));
     }
-  }, [state.activePlayer, state.isGameStarted, stopTimer, startTimer]);
+  }, [state.activePlayer, state.isGameStarted, state.mode, stopTimer, startTimer]);
 
   const setActivePlayer = useCallback((player: 1 | 2) => {
     if (state.activePlayer === player) return;
     
-    // Останавливаем таймер если он запущен
     stopTimer();
-    
     setState(prev => ({ 
       ...prev, 
       activePlayer: player 
     }));
-    
-    // Если игра запущена, запускаем таймер нового активного игрока
-    if (state.isGameStarted) {
-      startTimer(player);
-    }
-  }, [state.activePlayer, state.isGameStarted, stopTimer, startTimer]);
+  }, [state.activePlayer, stopTimer]);
 
   const setMainTime = useCallback((player: 1 | 2, minutes: number, seconds: number = 0) => {
     const totalSeconds = minutes * 60 + seconds;
@@ -198,7 +236,8 @@ const useGameClock = () => {
       [`player${player}`]: {
         ...prev[`player${player}`],
         mainTime: totalSeconds,
-        currentTime: prev.isGameStarted ? prev[`player${player}`].currentTime : totalSeconds
+        currentTime: prev.isGameStarted ? prev[`player${player}`].currentTime : totalSeconds,
+        usedPeriods: 0
       }
     }));
   }, []);
@@ -208,7 +247,8 @@ const useGameClock = () => {
       ...prev,
       [`player${player}`]: {
         ...prev[`player${player}`],
-        additionalTime: seconds
+        additionalTime: seconds,
+        usedPeriods: 0
       }
     }));
   }, []);
@@ -218,28 +258,42 @@ const useGameClock = () => {
       ...prev,
       [`player${player}`]: {
         ...prev[`player${player}`],
-        byoyomiPeriods: periods
+        byoyomiPeriods: periods,
+        usedPeriods: 0
       }
     }));
   }, []);
 
   const setMode = useCallback((mode: TimeControlMode) => {
-    setState(prev => ({ ...prev, mode }));
+    setState(prev => ({ 
+      ...prev, 
+      mode,
+      player1: {
+        ...prev.player1,
+        currentTime: prev.player1.mainTime,
+        usedPeriods: 0
+      },
+      player2: {
+        ...prev.player2,
+        currentTime: prev.player2.mainTime,
+        usedPeriods: 0
+      }
+    }));
   }, []);
 
   const copySettings = useCallback((fromPlayer: 1 | 2, toPlayer: 1 | 2) => {
     setState(prev => {
       const fromState = prev[`player${fromPlayer}`];
-      const toState = prev[`player${toPlayer}`];
       
       return {
         ...prev,
         [`player${toPlayer}`]: {
-          ...toState,
+          ...prev[`player${toPlayer}`],
           mainTime: fromState.mainTime,
           additionalTime: fromState.additionalTime,
           byoyomiPeriods: fromState.byoyomiPeriods,
-          currentTime: prev.isGameStarted ? toState.currentTime : fromState.mainTime
+          currentTime: prev.isGameStarted ? prev[`player${toPlayer}`].currentTime : fromState.mainTime,
+          usedPeriods: 0
         }
       };
     });
@@ -250,7 +304,7 @@ const useGameClock = () => {
     setState({
       player1: {
         mainTime: 300,
-        additionalTime: 5,
+        additionalTime: 30,
         byoyomiPeriods: 5,
         currentTime: 300,
         isRunning: false,
@@ -258,26 +312,24 @@ const useGameClock = () => {
       },
       player2: {
         mainTime: 300,
-        additionalTime: 5,
+        additionalTime: 30,
         byoyomiPeriods: 5,
         currentTime: 300,
         isRunning: false,
         usedPeriods: 0
       },
       mode: 'absolute',
-      activePlayer: 1, // При сбросе тоже устанавливаем первого игрока активным
+      activePlayer: 1,
       isGameStarted: false
     });
   }, [clearTimer]);
 
   // Эффекты
   useEffect(() => {
-    initAudio();
-    
     return () => {
       clearTimer();
     };
-  }, [initAudio, clearTimer]);
+  }, [clearTimer]);
 
   return {
     state,

@@ -23,13 +23,9 @@ const App: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
 
   const handlePlayerPress = (player: 1 | 2) => {
-    // Разрешаем переключать игроков в любом состоянии (даже когда игра не начата)
-    // Только если есть активный игрок и нажали не на текущего активного
-    if (state.activePlayer && state.activePlayer !== player) {
+    // Переключаем только если нажали на АКТИВНОГО игрока
+    if (state.activePlayer === player) {
       switchPlayer();
-    } else if (!state.activePlayer) {
-      // Если нет активного игрока, устанавливаем нажатого
-      setActivePlayer(player);
     }
   };
 
@@ -37,14 +33,7 @@ const App: React.FC = () => {
     if (state.isGameStarted) {
       pauseGame();
     } else {
-      // Перед стартом проверяем, что есть активный игрок
-      if (state.activePlayer) {
-        startGame();
-      } else {
-        // Если нет активного игрока, устанавливаем первого и начинаем
-        setActivePlayer(1);
-        startGame();
-      }
+      startGame();
     }
   };
 
