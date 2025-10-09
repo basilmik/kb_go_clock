@@ -456,12 +456,13 @@ html, body, #root {
     margin-bottom: 10px;
   }
 }
+/* Поворот текста для вертикального отображения */
 
-/* Поворот текста для вертикального отображения
+
 .time-display.player1 .time-content {
-  transform: rotate(90deg);
+  transform: rotate(-90deg);
 }
 
 .time-display.player2 .time-content {
-  transform: rotate(-90deg);
-} */
+  transform: rotate(90deg);
+}
