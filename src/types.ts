@@ -15,5 +15,6 @@ export interface GameClockState {
   player2: PlayerTime;
   mode: TimeControlMode;
   activePlayer: 1 | 2;
-  isGameStarted: boolean;
+  isGameRunning: boolean;
+  isFlagFallen: boolean;
 }

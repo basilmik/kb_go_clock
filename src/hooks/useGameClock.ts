@@ -4,24 +4,25 @@ import type { GameClockState, TimeControlMode, PlayerTime } from '../types';
 const useGameClock = () => {
   const [state, setState] = useState<GameClockState>({
     player1: {
-      mainTime: 20,
-      additionalTime: 10,
+      mainTime: 2,
+      additionalTime: 5,
       byoyomiPeriods: 3,
-      currentTime: 20,
+      currentTime: 2,
       isRunning: false,
       currentPeriod: -1
     },
     player2: {
-      mainTime: 20,
-      additionalTime: 10,
+      mainTime: 2,
+      additionalTime: 5,
       byoyomiPeriods: 3,
-      currentTime: 20,
+      currentTime: 2,
       isRunning: false,
       currentPeriod: -1
     },
     mode: 'byoyomi',
     activePlayer: 1,
-    isGameStarted: false
+    isGameRunning: false,
+    isFlagFallen: false
   });
 
   const timerRef = useRef<number | null>(null);
@@ -33,7 +34,6 @@ const useGameClock = () => {
     var elapsed = ((now - lastUpdateTimeRef.current) / 1000);
 
     lastUpdateTimeRef.current = now;
-    // stopTimer();
 
     setState(prevState => {
       const playerKey = `player${player}` as keyof GameClockState;
@@ -47,9 +47,6 @@ const useGameClock = () => {
           // Первый переход в бё-ёми - основное время полностью закончилось
           // Начинаем последний период (3-й при 3 периодах)
 
-          // now = Date.now();
-          // elapsed = (now - lastUpdateTimeRef.current) / 1000;
-          // lastUpdateTimeRef.current = now;
 
           return {
             ...prevState,
@@ -79,7 +76,9 @@ const useGameClock = () => {
             clearTimer();
             return {
               ...prevState,
-              isGameStarted: false,
+              isGameRunning: false,
+              isFlagFallen: true,
+
               [playerKey]: {
                 ...playerState,
                 isRunning: false,
@@ -93,7 +92,9 @@ const useGameClock = () => {
           clearTimer();
           return {
             ...prevState,
-            isGameStarted: false,
+            isGameRunning: false,
+            isFlagFallen: true,
+
             [playerKey]: {
               ...playerState,
               isRunning: false,
@@ -111,10 +112,9 @@ const useGameClock = () => {
         }
       };
     });
-    // const nextPlayer = state.activePlayer === 1 ? 1 : 2;
-    // startTimer(nextPlayer);
 
-  }, []);
+
+  }, [state.isGameRunning, state.isFlagFallen]);
 
   const startTimer = useCallback((player: 1 | 2) => {
     if (timerRef.current) {
@@ -161,25 +161,27 @@ const useGameClock = () => {
 
   // Публичные методы
   const startGame = useCallback(() => {
-    if (state.activePlayer) {
-      setState(prev => ({ ...prev, isGameStarted: true }));
+    
+    if (!state.isFlagFallen) {
+      setState(prev => ({ ...prev, isGameRunning: true }));
       startTimer(state.activePlayer);
     }
   }, [state.activePlayer, startTimer]);
 
   const pauseGame = useCallback(() => {
     stopTimer();
-    setState(prev => ({ ...prev, isGameStarted: false }));
+    if (!state.isFlagFallen) {
+    setState(prev => ({ ...prev, isGameRunning: false }));
+    }
   }, [stopTimer]);
 
   const switchPlayer = useCallback(() => {
-    if (!state.activePlayer) return;
 
     // Останавливаем таймер текущего игрока
     stopTimer();
 
     // Логика для разных режимов
-    if (state.isGameStarted) {
+    if (state.isGameRunning) {
       setState(prevState => {
         const currentPlayerKey = `player${state.activePlayer}` as keyof GameClockState;
         const currentPlayerState = prevState[currentPlayerKey] as PlayerTime;
@@ -225,7 +227,7 @@ const useGameClock = () => {
         activePlayer: nextPlayer 
       }));
     }
-  }, [state.activePlayer, state.isGameStarted, state.mode, stopTimer, startTimer]);
+  }, [state.activePlayer, state.isGameRunning,  state.mode, stopTimer, startTimer]);
 
   const setActivePlayer = useCallback((player: 1 | 2) => {
     if (state.activePlayer === player) return;
@@ -244,8 +246,8 @@ const useGameClock = () => {
       [`player${player}`]: {
         ...prev[`player${player}`],
         mainTime: totalSeconds,
-        currentTime: prev.isGameStarted ? prev[`player${player}`].currentTime : totalSeconds,
-        currentPeriod: 0
+        currentTime: prev.isGameRunning ? prev[`player${player}`].currentTime : totalSeconds
+        // , currentPeriod: 0
       }
     }));
   }, []);
@@ -255,8 +257,9 @@ const useGameClock = () => {
       ...prev,
       [`player${player}`]: {
         ...prev[`player${player}`],
-        additionalTime: seconds,
-        currentPeriod: 0
+        additionalTime: seconds
+        
+        // , currentPeriod: 0
       }
     }));
   }, []);
@@ -300,7 +303,7 @@ const useGameClock = () => {
           mainTime: fromState.mainTime,
           additionalTime: fromState.additionalTime,
           byoyomiPeriods: fromState.byoyomiPeriods,
-          currentTime: prev.isGameStarted ? prev[`player${toPlayer}`].currentTime : fromState.mainTime,
+          currentTime: prev.isGameRunning ? prev[`player${toPlayer}`].currentTime : fromState.mainTime,
           currentPeriod: 0
         }
       };
@@ -324,10 +327,15 @@ const useGameClock = () => {
         isRunning: false,
         currentPeriod: -1
       },
-      isGameStarted: false,
-      activePlayer: 1
+      isGameRunning: false,
+      isFlagFallen: false,
+      activePlayer: prev.activePlayer,
     }));
-  }, [clearTimer]);
+  }, [clearTimer 
+
+// , state.activePlayer, state.isFlagFallen
+
+  ]);
 
   // Эффекты
   useEffect(() => {

@@ -30,7 +30,7 @@ const App: React.FC = () => {
   };
 
   const handleMainButtonClick = () => {
-    if (state.isGameStarted) {
+    if (state.isGameRunning) {
       pauseGame();
     } else {
       startGame();
@@ -46,14 +46,14 @@ const App: React.FC = () => {
           isActive={state.activePlayer === 1}
           playerNumber={1}
           onPress={() => handlePlayerPress(1)}
-          isGameStarted={state.isGameStarted}
+          isGameRunning={state.isGameRunning}
           mode={state.mode}
           playerTime={state.player1}
         />
         
         {/* Центральная кнопка управления */}
         <ControlButton
-          isGameStarted={state.isGameStarted}
+          isGameRunning={state.isGameRunning}
           onMainButtonClick={handleMainButtonClick}
           onSettingsButtonClick={() => setShowSettings(true)}
         />
@@ -64,7 +64,7 @@ const App: React.FC = () => {
           isActive={state.activePlayer === 2}
           playerNumber={2}
           onPress={() => handlePlayerPress(2)}
-          isGameStarted={state.isGameStarted}
+          isGameRunning={state.isGameRunning}
           mode={state.mode}
           playerTime={state.player2}
         />
@@ -94,7 +94,7 @@ const App: React.FC = () => {
               onStart={startGame}
               onPause={pauseGame}
               onReset={resetGame}
-              isGameStarted={state.isGameStarted}
+              isGameRunning={state.isGameRunning}
               activePlayer={state.activePlayer}
               onPlayerSelect={setActivePlayer}
               player1={state.player1}

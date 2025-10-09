@@ -7,7 +7,7 @@ interface TimeDisplayProps {
   isActive: boolean;
   playerNumber: 1 | 2;
   onPress: () => void;
-  isGameStarted: boolean;
+  isGameRunning: boolean;
   mode: TimeControlMode;
   playerTime: PlayerTime;
 }
@@ -18,7 +18,6 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
   isActive,
   playerNumber,
   onPress,
-  isGameStarted,
   mode,
   playerTime
 }) => {

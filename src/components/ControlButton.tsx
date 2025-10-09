@@ -1,13 +1,13 @@
 import React, { useState, useRef, useCallback } from 'react';
 
 interface ControlButtonProps {
-  isGameStarted: boolean;
+  isGameRunning: boolean;
   onMainButtonClick: () => void;
   onSettingsButtonClick: () => void;
 }
 
 const ControlButton: React.FC<ControlButtonProps> = ({
-  isGameStarted,
+  isGameRunning,
   onMainButtonClick,
   onSettingsButtonClick
 }) => {
@@ -41,10 +41,10 @@ const ControlButton: React.FC<ControlButtonProps> = ({
       {/* Основная кнопка старта/стопа - в центре */}
       <div className="control-buttons-container">
         <button
-          className={`main-control-button ${isGameStarted ? 'stop' : 'start'}`}
+          className={`main-control-button ${isGameRunning ? 'stop' : 'start'}`}
           onClick={onMainButtonClick}
         >
-          {isGameStarted ? '⏹️' : '▶️'}
+          {isGameRunning ? '⏹️' : '▶️'}
         </button>
       </div>
 

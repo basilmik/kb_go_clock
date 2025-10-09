@@ -11,7 +11,7 @@ interface ControlPanelProps {
   onStart: () => void;
   onPause: () => void;
   onReset: () => void;
-  isGameStarted: boolean;
+  isGameRunning: boolean;
   activePlayer: 1 | 2 | null;
   onPlayerSelect: (player: 1 | 2) => void;
   player1: PlayerTime;
@@ -32,12 +32,9 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   onAdditionalTimeSet,
   onByoyomiPeriodsSet,
   onCopySettings,
-  onStart,
-  onPause,
   onReset,
-  isGameStarted,
-  activePlayer,
-  onPlayerSelect,
+  isGameRunning,
+
   player1,
   player2
 }) => {
@@ -236,14 +233,14 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         <div className="player-selection">
           <button 
             onClick={() => onPlayerSelect(1)}
-            disabled={isGameStarted}
+            disabled={isGameRunning}
             className={`player-button ${activePlayer === 1 ? 'active' : ''}`}
           >
             Игрок 1
           </button>
           <button 
             onClick={() => onPlayerSelect(2)}
-            disabled={isGameStarted}
+            disabled={isGameRunning}
             className={`player-button ${activePlayer === 2 ? 'active' : ''}`}
           >
             Игрок 2
@@ -257,7 +254,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         <select 
           value={mode} 
           onChange={(e) => onModeChange(e.target.value as TimeControlMode)}
-          disabled={isGameStarted}
+          disabled={isGameRunning}
           className="mode-select"
         >
           <option value="absolute">Абсолют</option>
@@ -280,7 +277,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                 value={mainTime1.minutes}
                 onChange={(e) => handleMainTimeChange1('minutes', e.target.value)}
                 onBlur={() => handleBlur1('minutes')}
-                disabled={isGameStarted}
+                disabled={isGameRunning}
                 placeholder="0"
               />
               <span>мин</span>
@@ -291,7 +288,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                 value={mainTime1.seconds}
                 onChange={(e) => handleMainTimeChange1('seconds', e.target.value)}
                 onBlur={() => handleBlur1('seconds')}
-                disabled={isGameStarted}
+                disabled={isGameRunning}
                 placeholder="0"
               />
               <span>сек</span>
@@ -308,7 +305,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   value={additionalTime1}
                   onChange={(e) => handleAdditionalTimeChange1(e.target.value)}
                   onBlur={handleAdditionalBlur1}
-                  disabled={isGameStarted}
+                  disabled={isGameRunning}
                   placeholder="0"
                 />
               </div>
@@ -325,7 +322,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   value={byoyomiPeriods1}
                   onChange={(e) => handleByoyomiPeriodsChange1(e.target.value)}
                   onBlur={handleByoyomiBlur1}
-                  disabled={isGameStarted}
+                  disabled={isGameRunning}
                   placeholder="0"
                 />
               </div>
@@ -346,7 +343,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                 value={mainTime2.minutes}
                 onChange={(e) => handleMainTimeChange2('minutes', e.target.value)}
                 onBlur={() => handleBlur2('minutes')}
-                disabled={isGameStarted}
+                disabled={isGameRunning}
                 placeholder="0"
               />
               <span>мин</span>
@@ -357,7 +354,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                 value={mainTime2.seconds}
                 onChange={(e) => handleMainTimeChange2('seconds', e.target.value)}
                 onBlur={() => handleBlur2('seconds')}
-                disabled={isGameStarted}
+                disabled={isGameRunning}
                 placeholder="0"
               />
               <span>сек</span>
@@ -374,7 +371,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   value={additionalTime2}
                   onChange={(e) => handleAdditionalTimeChange2(e.target.value)}
                   onBlur={handleAdditionalBlur2}
-                  disabled={isGameStarted}
+                  disabled={isGameRunning}
                   placeholder="0"
                 />
               </div>
@@ -391,7 +388,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   value={byoyomiPeriods2}
                   onChange={(e) => handleByoyomiPeriodsChange2(e.target.value)}
                   onBlur={handleByoyomiBlur2}
-                  disabled={isGameStarted}
+                  disabled={isGameRunning}
                   placeholder="0"
                 />
               </div>
@@ -406,14 +403,14 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         <div className="copy-buttons">
           <button 
             onClick={() => handleCopySettings(1, 2)} 
-            disabled={isGameStarted}
+            disabled={isGameRunning}
             className="copy-button"
           >
             Копировать 1 → 2
           </button>
           <button 
             onClick={() => handleCopySettings(2, 1)} 
-            disabled={isGameStarted}
+            disabled={isGameRunning}
             className="copy-button"
           >
             Копировать 2 → 1
