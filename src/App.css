@@ -38,19 +38,19 @@ html, body, #root {
     writing-mode: vertical-rl;
     text-orientation: mixed;
   }
-/*   
+  
   .time-display.player1 {
     transform: rotate(180deg) !important; 
   }
-    */
+   
   
   .time-display.player2 {
-    transform: none !important;
+    transform: rotate(180deg) !important; 
   }
   
-  .time-content {
+  /* .time-content {
     transform: rotate(180deg);
-  }
+  } */
 }
 
 .time-displays {
