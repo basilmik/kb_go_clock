@@ -28,6 +28,10 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 h1 {
@@ -45,6 +49,10 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 button:hover {
   border-color: #646cff;

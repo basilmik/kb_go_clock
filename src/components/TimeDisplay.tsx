@@ -22,16 +22,12 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
   playerTime
 }) => {
   const formatTime = (seconds: number): string => {
-    // seconds = seconds + 1;
     const absSeconds = Math.max(0, Math.abs(seconds));
-    // const minutes = Math.floor(absSeconds / 60);
     const minutes = Math.floor(absSeconds / 60);
-    // const remainingSeconds = Math.floor(absSeconds % 60);
     const remainingSeconds = Math.ceil(absSeconds % 60);
     const sign = seconds < 0 ? '-' : '';
     
     return `${sign}${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-    // return `${absSeconds.toString().padStart(2, '0')}`;
   };
 
   const getBackgroundColor = () => {
@@ -54,7 +50,6 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
 
     return (
       <div style={{ fontSize: '0.8rem', color: '#888', marginBottom: '5px' }}>
-        {/* Основное: {mainMinutes}:{mainSeconds.toString().padStart(2, '0')} */}
         {currentPeriod}
       </div>
     );
@@ -62,7 +57,6 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
 
   // Отображение дополнительной информации в зависимости от режима
   const renderAdditionalInfo = () => {
-      // Перед началом игры показываем настройки
       switch (mode) {
         case 'fischer':
           return (
@@ -79,11 +73,11 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
         default:
           return null;
       }
-    
   };
 
   return (
     <div
+      className={`time-display player${playerNumber}`}
       style={{
         width: '100%',
         height: '50vh',
@@ -92,7 +86,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: getBackgroundColor(),
-        transform: playerNumber === 1 ? 'rotate(180deg)' : 'none',
+        // transform: playerNumber === 1 ? 'rotate(180deg)' : 'none',
         transition: 'all 0.3s ease',
         cursor: 'pointer',
         userSelect: 'none',
@@ -105,19 +99,21 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
       }}
       onClick={onPress}
     >
-      {renderMainTimeInfo()}
-      
-      <div style={{
-        fontSize: 'clamp(2rem, 10vw, 4rem)',
-        fontWeight: 'bold',
-        color: getTextColor(),
-        textAlign: 'center',
-        margin: '10px'
-      }}>
-        {formatTime(time)}
+      <div className="time-content">
+        {renderMainTimeInfo()}
+        
+        <div style={{
+          fontSize: 'clamp(2rem, 10vw, 4rem)',
+          fontWeight: 'bold',
+          color: getTextColor(),
+          textAlign: 'center',
+          margin: '10px'
+        }}>
+          {formatTime(time)}
+        </div>
+        
+        {renderAdditionalInfo()}
       </div>
-      
-      {renderAdditionalInfo()}
     </div>
   );
 };

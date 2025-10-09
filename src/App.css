@@ -3,6 +3,11 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body, #root {
@@ -18,6 +23,34 @@ html, body, #root {
   flex-direction: column;
   position: relative;
   overflow: hidden;
+}
+
+/* Ландшафтная ориентация */
+@media (orientation: landscape) {
+  .time-displays {
+    flex-direction: row;
+  }
+  
+  .time-display {
+    width: 50vw;
+    height: 100vh;
+    transform: none !important;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+/*   
+  .time-display.player1 {
+    transform: rotate(180deg) !important; 
+  }
+    */
+  
+  .time-display.player2 {
+    transform: none !important;
+  }
+  
+  /* .time-content {
+    transform: rotate(0deg);
+  } */
 }
 
 .time-displays {
@@ -56,6 +89,10 @@ html, body, #root {
   align-items: center;
   justify-content: center;
   z-index: 20;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .main-control-button.stop {
@@ -93,6 +130,10 @@ html, body, #root {
   justify-content: center;
   position: relative;
   overflow: visible;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .settings-button:active {
@@ -139,7 +180,7 @@ html, body, #root {
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 20px;
+  padding: 10px;
 }
 
 .settings-modal {
@@ -147,7 +188,7 @@ html, body, #root {
   border-radius: 12px;
   width: 100%;
   max-width: 500px;
-  max-height: 90vh;
+  max-height: 95vh;
   overflow-y: auto;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.3s ease;
@@ -168,7 +209,7 @@ html, body, #root {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 15px;
   border-bottom: 1px solid #eee;
   background: #f8f9fa;
   border-radius: 12px 12px 0 0;
@@ -177,6 +218,7 @@ html, body, #root {
 .settings-header h2 {
   margin: 0;
   color: #333;
+  font-size: 1.3rem;
 }
 
 .close-button {
@@ -187,6 +229,10 @@ html, body, #root {
   color: #666;
   padding: 5px;
   border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .close-button:hover {
@@ -194,55 +240,22 @@ html, body, #root {
   color: #333;
 }
 
-/* Стили для панели управления */
+/* Стили для панели управления - НОВАЯ СТРУКТУРА */
 .control-panel {
-  padding: 20px;
-}
-
-.control-section {
-  margin-bottom: 25px;
   padding: 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.control-section h3 {
-  margin: 0 0 15px 0;
-  color: #333;
-  font-size: 1.1rem;
-}
-
-.player-selection {
+.top-controls {
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
-.player-button {
-  flex: 1;
-  padding: 10px;
-  border: 2px solid #ddd;
-  background: white;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: #333;
-}
-
-.player-button.active {
-  border-color: #4caf50;
-  background: #e8f5e8;
-  color: #2e7d32;
-}
-
-.player-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  color: #999;
-}
-
-/* Стили для выпадающего списка */
 .mode-select {
-  width: 100%;
+  flex: 1;
   padding: 10px;
   border: 2px solid #ddd;
   border-radius: 6px;
@@ -251,24 +264,30 @@ html, body, #root {
   color: #333;
 }
 
-.mode-select option {
-  background: white;
-  color: #333;
+.reset-button {
+  padding: 10px 15px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  white-space: nowrap;
 }
 
-.mode-select:disabled {
-  background: #f5f5f5;
-  color: #999;
-  border-color: #eee;
+.reset-button:hover {
+  background: #d32f2f;
 }
 
-.players-settings {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
+.players-settings-container {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
 }
 
 .player-settings {
+  flex: 1;
   padding: 15px;
   background: white;
   border: 1px solid #e9ecef;
@@ -279,6 +298,29 @@ html, body, #root {
   margin: 0 0 15px 0;
   text-align: center;
   color: #333;
+  font-size: 1.1rem;
+}
+
+.copy-button-small {
+  padding: 8px 12px;
+  background: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.copy-button-small:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.copy-button-small:not(:disabled):hover {
+  background: #f57c00;
 }
 
 .time-input-group {
@@ -290,6 +332,7 @@ html, body, #root {
   margin-bottom: 5px;
   font-weight: 500;
   color: #555;
+  font-size: 0.9rem;
 }
 
 .time-inputs {
@@ -309,6 +352,7 @@ html, body, #root {
   text-align: center;
   background: white;
   color: #333;
+  font-size: 0.9rem;
 }
 
 .time-inputs input:disabled,
@@ -364,47 +408,6 @@ html, body, #root {
   background: #1976d2;
 }
 
-.copy-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.copy-button {
-  flex: 1;
-  padding: 10px;
-  background: #ff9800;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.copy-button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-
-.copy-button:not(:disabled):hover {
-  background: #f57c00;
-}
-
-.reset-button {
-  width: 100%;
-  padding: 15px;
-  background: #f44336;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.reset-button:hover {
-  background: #d32f2f;
-}
-
 /* Адаптивность */
 @media (max-width: 768px) {
   .main-control-button {
@@ -419,13 +422,13 @@ html, body, #root {
     font-size: 1.3rem;
   }
   
-  .players-settings {
-    grid-template-columns: 1fr;
+  .settings-modal {
+    margin: 5px;
+    max-height: 90vh;
   }
   
-  .settings-modal {
-    margin: 10px;
-    max-height: 85vh;
+  .players-settings-container {
+    flex-direction: column;
   }
 }
 
@@ -449,15 +452,35 @@ html, body, #root {
   }
   
   .control-panel {
-    padding: 15px;
-  }
-  
-  .control-section {
-    padding: 12px;
-    margin-bottom: 20px;
+    padding: 10px;
   }
   
   .player-settings {
-    padding: 12px;
+    padding: 10px;
+  }
+  
+  .top-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .mode-select,
+  .reset-button {
+    width: 100%;
+  }
+}
+
+/* Для очень маленьких экранов */
+@media (max-height: 600px) {
+  .settings-modal {
+    max-height: 98vh;
+  }
+  
+  .player-settings {
+    padding: 10px;
+  }
+  
+  .time-input-group {
+    margin-bottom: 10px;
   }
 }

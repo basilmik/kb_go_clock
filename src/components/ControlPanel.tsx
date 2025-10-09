@@ -227,30 +227,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
   return (
     <div className="control-panel">
-      {/* Выбор активного игрока */}
-      {/* <div className="control-section">
-        <h3>Активный игрок</h3>
-        <div className="player-selection">
-          <button 
-            onClick={() => onPlayerSelect(1)}
-            disabled={isGameRunning}
-            className={`player-button ${activePlayer === 1 ? 'active' : ''}`}
-          >
-            Игрок 1
-          </button>
-          <button 
-            onClick={() => onPlayerSelect(2)}
-            disabled={isGameRunning}
-            className={`player-button ${activePlayer === 2 ? 'active' : ''}`}
-          >
-            Игрок 2
-          </button>
-        </div>
-      </div> */}
-
-      {/* Режим контроля времени */}
-      <div className="control-section">
-        <h3>Режим контроля времени</h3>
+      {/* Верхняя строка: выбор режима и кнопка сброса */}
+      <div className="top-controls">
         <select 
           value={mode} 
           onChange={(e) => onModeChange(e.target.value as TimeControlMode)}
@@ -261,9 +239,17 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           <option value="fischer">Фишер</option>
           <option value="byoyomi">Бё-ёми</option>
         </select>
+        
+        <button 
+          onClick={onReset}
+          className="reset-button"
+        >
+          🔄 Сбросить
+        </button>
       </div>
 
-      <div className="players-settings">
+      {/* Настройки игроков с кнопкой копирования между ними */}
+      <div className="players-settings-container">
         {/* Игрок 1 */}
         <div className="player-settings">
           <h3>Игрок 1</h3>
@@ -330,6 +316,15 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           )}
         </div>
 
+        {/* Кнопка копирования 1 → 2 */}
+        <button 
+          onClick={() => handleCopySettings(1, 2)} 
+          disabled={isGameRunning}
+          className="copy-button-small"
+        >
+          1 → 2
+        </button>
+
         {/* Игрок 2 */}
         <div className="player-settings">
           <h3>Игрок 2</h3>
@@ -395,37 +390,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             </div>
           )}
         </div>
-      </div>
-
-      {/* Кнопки копирования */}
-      <div className="control-section">
-        <h3>Копирование настроек</h3>
-        <div className="copy-buttons">
-          <button 
-            onClick={() => handleCopySettings(1, 2)} 
-            disabled={isGameRunning}
-            className="copy-button"
-          >
-            Копировать 1 → 2
-          </button>
-          <button 
-            onClick={() => handleCopySettings(2, 1)} 
-            disabled={isGameRunning}
-            className="copy-button"
-          >
-            Копировать 2 → 1
-          </button>
-        </div>
-      </div>
-
-      {/* Кнопка сброса */}
-      <div className="control-section">
-        <button 
-          onClick={onReset}
-          className="reset-button"
-        >
-          🔄 Сбросить часы
-        </button>
       </div>
     </div>
   );

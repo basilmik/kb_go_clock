@@ -22,7 +22,7 @@ const ControlButton: React.FC<ControlButtonProps> = ({
         onSettingsButtonClick();
         setShowSettingsHint(false);
       }
-    }, 2000);
+    }, 1000); // Изменено с 2000 на 1000 мс (1 секунда)
     
     setShowSettingsHint(true);
   }, [onSettingsButtonClick]);
@@ -61,7 +61,7 @@ const ControlButton: React.FC<ControlButtonProps> = ({
           ⚙️
           {showSettingsHint && (
             <div className="settings-hint">
-              Удерживайте 2 секунды
+              Удерживайте 1 секунду
             </div>
           )}
         </button>
