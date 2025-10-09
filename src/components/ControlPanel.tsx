@@ -231,7 +231,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   return (
     <div className="control-panel">
       {/* Выбор активного игрока */}
-      <div className="control-section">
+      {/* <div className="control-section">
         <h3>Активный игрок</h3>
         <div className="player-selection">
           <button 
@@ -249,7 +249,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             Игрок 2
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* Режим контроля времени */}
       <div className="control-section">

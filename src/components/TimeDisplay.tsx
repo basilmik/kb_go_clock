@@ -23,12 +23,16 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
   playerTime
 }) => {
   const formatTime = (seconds: number): string => {
+    // seconds = seconds + 1;
     const absSeconds = Math.max(0, Math.abs(seconds));
+    // const minutes = Math.floor(absSeconds / 60);
     const minutes = Math.floor(absSeconds / 60);
-    const remainingSeconds = Math.floor(absSeconds % 60);
+    // const remainingSeconds = Math.floor(absSeconds % 60);
+    const remainingSeconds = Math.ceil(absSeconds % 60);
     const sign = seconds < 0 ? '-' : '';
     
     return `${sign}${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    // return `${absSeconds.toString().padStart(2, '0')}`;
   };
 
   const getBackgroundColor = () => {
@@ -47,66 +51,36 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
   const renderMainTimeInfo = () => {
     const mainMinutes = Math.floor(playerTime.mainTime / 60);
     const mainSeconds = playerTime.mainTime % 60;
+    const currentPeriod = playerTime.currentPeriod;
+
     return (
       <div style={{ fontSize: '0.8rem', color: '#888', marginBottom: '5px' }}>
-        Основное: {mainMinutes}:{mainSeconds.toString().padStart(2, '0')}
+        {/* Основное: {mainMinutes}:{mainSeconds.toString().padStart(2, '0')} */}
+        {currentPeriod}
       </div>
     );
   };
 
   // Отображение дополнительной информации в зависимости от режима
   const renderAdditionalInfo = () => {
-    if (!isGameStarted) {
       // Перед началом игры показываем настройки
       switch (mode) {
         case 'fischer':
           return (
             <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
-              +{playerTime.additionalTime} сек
+              +{playerTime.additionalTime}
             </div>
           );
         case 'byoyomi':
           return (
             <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
-              {playerTime.byoyomiPeriods} период(ов) × {playerTime.additionalTime} сек
+              {playerTime.currentPeriod === -1 ? playerTime.byoyomiPeriods : playerTime.currentPeriod} × {playerTime.additionalTime}
             </div>
           );
         default:
           return null;
       }
-    } else {
-      // Во время игры показываем текущее состояние
-      switch (mode) {
-        case 'byoyomi':
-          let displayPeriods;
-          if (playerTime.usedPeriods === 0) {
-            // Основное время - показываем все периоды
-            displayPeriods = playerTime.byoyomiPeriods;
-          } else {
-            // В периодах бё-ёми - показываем оставшиеся периоды + 1
-            // usedPeriods = 1 (3-й период) → displayPeriods = 3
-            // usedPeriods = 2 (2-й период) → displayPeriods = 2  
-            // usedPeriods = 3 (1-й период) → displayPeriods = 1
-            displayPeriods = playerTime.byoyomiPeriods - playerTime.usedPeriods + 1;
-          }
-          return (
-            <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
-              Периодов: {displayPeriods}
-            </div>
-          );
-        case 'fischer':
-          if (isActive) {
-            return (
-              <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
-                +{playerTime.additionalTime} сек после хода
-              </div>
-            );
-          }
-          return null;
-        default:
-          return null;
-      }
-    }
+    
   };
 
   return (

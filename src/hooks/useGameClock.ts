@@ -4,22 +4,22 @@ import type { GameClockState, TimeControlMode, PlayerTime } from '../types';
 const useGameClock = () => {
   const [state, setState] = useState<GameClockState>({
     player1: {
-      mainTime: 300,
-      additionalTime: 30,
-      byoyomiPeriods: 5,
-      currentTime: 300,
+      mainTime: 20,
+      additionalTime: 10,
+      byoyomiPeriods: 3,
+      currentTime: 20,
       isRunning: false,
-      usedPeriods: 0
+      currentPeriod: -1
     },
     player2: {
-      mainTime: 300,
-      additionalTime: 30,
-      byoyomiPeriods: 5,
-      currentTime: 300,
+      mainTime: 20,
+      additionalTime: 10,
+      byoyomiPeriods: 3,
+      currentTime: 20,
       isRunning: false,
-      usedPeriods: 0
+      currentPeriod: -1
     },
-    mode: 'absolute',
+    mode: 'byoyomi',
     activePlayer: 1,
     isGameStarted: false
   });
@@ -29,9 +29,11 @@ const useGameClock = () => {
 
   // Таймер
   const updateTimer = useCallback((player: 1 | 2) => {
-    const now = Date.now();
-    const elapsed = (now - lastUpdateTimeRef.current) / 1000;
+    var now = Date.now();
+    var elapsed = ((now - lastUpdateTimeRef.current) / 1000);
+
     lastUpdateTimeRef.current = now;
+    // stopTimer();
 
     setState(prevState => {
       const playerKey = `player${player}` as keyof GameClockState;
@@ -41,30 +43,35 @@ const useGameClock = () => {
 
       // Проверка окончания времени
       if (newTime <= 0) {
-        if (prevState.mode === 'byoyomi' && playerState.usedPeriods === 0) {
+        if (prevState.mode === 'byoyomi' && playerState.currentPeriod === -1) {
           // Первый переход в бё-ёми - основное время полностью закончилось
           // Начинаем последний период (3-й при 3 периодах)
-          const remainingPeriods = playerState.byoyomiPeriods - 1;
+
+          // now = Date.now();
+          // elapsed = (now - lastUpdateTimeRef.current) / 1000;
+          // lastUpdateTimeRef.current = now;
+
           return {
             ...prevState,
             [playerKey]: {
               ...playerState,
-              currentTime: playerState.additionalTime,
-              usedPeriods: 1 // Начинаем использовать периоды
+              currentTime: playerState.additionalTime ,
+              currentPeriod: playerState.byoyomiPeriods // Начинаем использовать периоды
             }
           };
-        } else if (prevState.mode === 'byoyomi' && playerState.usedPeriods > 0) {
+        } else if (prevState.mode === 'byoyomi' && playerState.currentPeriod != -1) {
           // Тратится период в бё-ёми
-          const newUsedPeriods = playerState.usedPeriods + 1;
+          const newcurrentPeriod = playerState.currentPeriod - 1;
           
           // Если после траты периода остались еще периоды
-          if (newUsedPeriods <= playerState.byoyomiPeriods) {
+          if (newcurrentPeriod > 0) {
+            
             return {
               ...prevState,
               [playerKey]: {
                 ...playerState,
                 currentTime: playerState.additionalTime, // Начинаем следующий период
-                usedPeriods: newUsedPeriods
+                currentPeriod: newcurrentPeriod
               }
             };
           } else {
@@ -73,12 +80,11 @@ const useGameClock = () => {
             return {
               ...prevState,
               isGameStarted: false,
-              activePlayer: null,
               [playerKey]: {
                 ...playerState,
                 isRunning: false,
                 currentTime: 0,
-                usedPeriods: newUsedPeriods
+                currentPeriod: newcurrentPeriod
               }
             };
           }
@@ -88,7 +94,6 @@ const useGameClock = () => {
           return {
             ...prevState,
             isGameStarted: false,
-            activePlayer: null,
             [playerKey]: {
               ...playerState,
               isRunning: false,
@@ -106,6 +111,9 @@ const useGameClock = () => {
         }
       };
     });
+    // const nextPlayer = state.activePlayer === 1 ? 1 : 2;
+    // startTimer(nextPlayer);
+
   }, []);
 
   const startTimer = useCallback((player: 1 | 2) => {
@@ -188,9 +196,9 @@ const useGameClock = () => {
               currentTime: currentPlayerState.currentTime + currentPlayerState.additionalTime
             }
           };
-        } else if (prevState.mode === 'byoyomi' && currentPlayerState.usedPeriods > 0) {
+        } else if (prevState.mode === 'byoyomi' && currentPlayerState.currentPeriod != -1) {
           // Режим бё-ёми - сбрасываем время на полную длительность периода
-          // ТОЛЬКО если игрок уже в бё-ёми (usedPeriods > 0)
+          // ТОЛЬКО если игрок уже в бё-ёми (currentPeriod != 1 )
           updatedState = {
             ...updatedState,
             [currentPlayerKey]: {
@@ -237,7 +245,7 @@ const useGameClock = () => {
         ...prev[`player${player}`],
         mainTime: totalSeconds,
         currentTime: prev.isGameStarted ? prev[`player${player}`].currentTime : totalSeconds,
-        usedPeriods: 0
+        currentPeriod: 0
       }
     }));
   }, []);
@@ -248,7 +256,7 @@ const useGameClock = () => {
       [`player${player}`]: {
         ...prev[`player${player}`],
         additionalTime: seconds,
-        usedPeriods: 0
+        currentPeriod: 0
       }
     }));
   }, []);
@@ -259,7 +267,7 @@ const useGameClock = () => {
       [`player${player}`]: {
         ...prev[`player${player}`],
         byoyomiPeriods: periods,
-        usedPeriods: 0
+        currentPeriod: 0
       }
     }));
   }, []);
@@ -271,12 +279,12 @@ const useGameClock = () => {
       player1: {
         ...prev.player1,
         currentTime: prev.player1.mainTime,
-        usedPeriods: 0
+        currentPeriod: 0
       },
       player2: {
         ...prev.player2,
         currentTime: prev.player2.mainTime,
-        usedPeriods: 0
+        currentPeriod: 0
       }
     }));
   }, []);
@@ -293,35 +301,32 @@ const useGameClock = () => {
           additionalTime: fromState.additionalTime,
           byoyomiPeriods: fromState.byoyomiPeriods,
           currentTime: prev.isGameStarted ? prev[`player${toPlayer}`].currentTime : fromState.mainTime,
-          usedPeriods: 0
+          currentPeriod: 0
         }
       };
     });
   }, []);
 
+
   const resetGame = useCallback(() => {
     clearTimer();
-    setState({
+    setState(prev => ({
+      ...prev,
       player1: {
-        mainTime: 300,
-        additionalTime: 30,
-        byoyomiPeriods: 5,
-        currentTime: 300,
+        ...prev.player1,
+        currentTime: prev.player1.mainTime, // Используем основное время из настроек
         isRunning: false,
-        usedPeriods: 0
+        currentPeriod: -1
       },
       player2: {
-        mainTime: 300,
-        additionalTime: 30,
-        byoyomiPeriods: 5,
-        currentTime: 300,
+        ...prev.player2,
+        currentTime: prev.player2.mainTime, // Используем основное время из настроек
         isRunning: false,
-        usedPeriods: 0
+        currentPeriod: -1
       },
-      mode: 'absolute',
-      activePlayer: 1,
-      isGameStarted: false
-    });
+      isGameStarted: false,
+      activePlayer: 1
+    }));
   }, [clearTimer]);
 
   // Эффекты
