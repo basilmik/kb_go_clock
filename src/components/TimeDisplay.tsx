@@ -31,8 +31,8 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
   };
 
   const getBackgroundColor = () => {
-    if (isRunning && isActive) return '#e8f5e8';
-    if (isActive) return '#c8e6c9';
+    if (isRunning && isActive) return '#c8e6c9 ';
+    if (isActive) return '#e8f5e8';
     return '#f5f5f5';
   };
 
