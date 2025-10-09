@@ -27,13 +27,14 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
     const remainingSeconds = Math.ceil(absSeconds % 60);
     const sign = seconds < 0 ? '-' : '';
     
-    return `${sign}${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    // Всегда формат 00:00 - две цифры для минут и две для секунд
+    return `${sign}${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
   const getBackgroundColor = () => {
-    // if (isRunning && isActive) return '#06205b ';
-    // if (isActive) return '#e8f5e8';
-    return '#f5f5f5';
+    if (isRunning && isActive) return '#fff';
+    if (isActive) return '#fff';
+    return '#57b3e4';
   };
 
   const getTextColor = () => {
@@ -105,7 +106,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
         {/* {renderMainTimeInfo()} */}
         
         <div style={{
-          fontSize: 'clamp(10rem, 10vw, 4rem)',
+          fontSize: 'clamp(8rem, 10vw, 4rem)',
           fontWeight: 'bold',
           color: getTextColor(),
           textAlign: 'center',
