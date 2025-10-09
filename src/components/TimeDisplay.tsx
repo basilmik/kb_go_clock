@@ -86,7 +86,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: getBackgroundColor(),
-        // transform: playerNumber === 1 ? 'rotate(180deg)' : 'none',
+        transform: playerNumber === 1 ? 'rotate(180deg)' : 'none',
         transition: 'all 0.3s ease',
         cursor: 'pointer',
         userSelect: 'none',
@@ -99,7 +99,9 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
       }}
       onClick={onPress}
     >
-      <div className="time-content">
+      <div 
+        className="time-content"
+      >
         {renderMainTimeInfo()}
         
         <div style={{
