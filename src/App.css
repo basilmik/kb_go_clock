@@ -47,11 +47,11 @@ html, body, #root {
 
 /* Основная кнопка старта/стопа */
 .main-control-button {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
+  width: 200px;
+  height: 100px;
+  border-radius: 10%;
   border: none;
-  background: linear-gradient(145deg, #4caf50, #45a049);
+  background: linear-gradient(145deg, #57b3e4, #57b3e4);
   color: white;
   font-size: 2rem;
   cursor: pointer;
@@ -68,7 +68,7 @@ html, body, #root {
 }
 
 .main-control-button.stop {
-  background: linear-gradient(145deg, #f44336, #d32f2f);
+  background: linear-gradient(145deg, #06205b, #06205b);
 }
 
 .main-control-button:active {
@@ -87,13 +87,13 @@ html, body, #root {
 
 /* Кнопка настроек (полукруг у правого края) */
 .settings-button {
-  width: 60px;
-  height: 60px;
-  border-radius: 60px 0 0 60px; /* Только левые углы скруглены */
+  width: 150px;
+  height: 150px;
+  border-radius: 75px 0 0 75px; /* Только левые углы скруглены */
   border: none;
-  background: linear-gradient(145deg, #2196f3, #1976d2);
+  background: linear-gradient(145deg, #06205b, #57b3e4);
   color: white;
-  font-size: 1.5rem;
+  font-size: 5rem;
   cursor: pointer;
   box-shadow: -3px 0 10px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
@@ -122,7 +122,7 @@ html, body, #root {
   color: white;
   padding: 5px 10px;
   border-radius: 4px;
-  font-size: 0.8rem;
+  font-size: 1rem;
   white-space: nowrap;
   z-index: 30;
 }

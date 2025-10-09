@@ -31,15 +31,15 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
   };
 
   const getBackgroundColor = () => {
-    if (isRunning && isActive) return '#c8e6c9 ';
-    if (isActive) return '#e8f5e8';
+    // if (isRunning && isActive) return '#06205b ';
+    // if (isActive) return '#e8f5e8';
     return '#f5f5f5';
   };
 
   const getTextColor = () => {
-    if (time <= 10 && time > 0) return '#f44336';
-    if (time <= 0) return '#d32f2f';
-    return '#333';
+    // if (time <= 10 && time > 0) return '#f44336';
+    // if (time <= 0) return '#d32f2f';
+    return '#06205b';
   };
 
   // Отображение информации о основном времени (всегда)
@@ -60,13 +60,13 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
       switch (mode) {
         case 'fischer':
           return (
-            <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
+            <div style={{ fontSize: '4rem', color: '#06205b', marginTop: '5px' }}>
               +{playerTime.additionalTime}
             </div>
           );
         case 'byoyomi':
           return (
-            <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '5px' }}>
+            <div style={{ fontSize: '4rem', color: '#06205b', marginLeft: '50px' }}>
               {playerTime.currentPeriod === -1 ? playerTime.byoyomiPeriods : playerTime.currentPeriod} × {playerTime.additionalTime}
             </div>
           );
@@ -102,10 +102,10 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
       <div 
         className="time-content"
       >
-        {renderMainTimeInfo()}
+        {/* {renderMainTimeInfo()} */}
         
         <div style={{
-          fontSize: 'clamp(2rem, 10vw, 4rem)',
+          fontSize: 'clamp(10rem, 10vw, 4rem)',
           fontWeight: 'bold',
           color: getTextColor(),
           textAlign: 'center',
