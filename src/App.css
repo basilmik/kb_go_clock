@@ -91,17 +91,16 @@ html, body, #root {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Кнопка настроек - фиксированная позиция у правого края экрана */
+/* Кнопка настроек - внутри контейнера таймеров */
 .settings-button-container {
-  position: fixed;
+  position: absolute;
   top: 50%;
-  right: 0;
+  left: -60px; /* Смещаем влево так, чтобы было видно только половину */
   transform: translateY(-50%);
   z-index: 10;
-  width: 120px; /* В 2 раза больше */
-  height: 120px; /* В 2 раза больше */
+  width: 120px;
+  height: 120px;
   pointer-events: auto;
-  overflow: hidden;
 }
 
 .settings-button {
@@ -111,9 +110,9 @@ html, body, #root {
   border: none;
   background: linear-gradient(145deg, #06205b, #57b3e4);
   color: white;
-  font-size: 3rem; /* Увеличим шрифт пропорционально */
+  font-size: 3rem;
   cursor: pointer;
-  box-shadow: -3px 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -125,20 +124,20 @@ html, body, #root {
   -ms-user-select: none;
   user-select: none;
   pointer-events: auto;
-  /* Смещаем кнопку вправо так, чтобы было видно только половину */
-  transform: translateX(60px); /* Смещаем на половину ширины (120px / 2) */
 }
 
 .settings-button:active {
-  transform: translateX(60px) scale(0.95);
+  transform: scale(0.95);
 }
+
+
 
 /* Подсказка для кнопки настроек */
 .settings-hint {
   position: absolute;
   top: -40px;
   left: 50%;
-  transform: translateX(-50%);
+
   background: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 5px 10px;
@@ -146,6 +145,10 @@ html, body, #root {
   font-size: 1rem;
   white-space: nowrap;
   z-index: 30;
+
+
+  transform: rotate(90deg) translateX(40%);
+
 }
 
 .settings-hint::after {
@@ -153,7 +156,7 @@ html, body, #root {
   position: absolute;
   bottom: -5px;
   left: 50%;
-  transform: translateX(-50%);
+  /* transform: translateX(-50%); */
   width: 0;
   height: 0;
   border-left: 5px solid transparent;

@@ -64,13 +64,13 @@ const App: React.FC = () => {
       </div>
 
       {/* ФИКСИРОВАННЫЙ КОНТЕЙНЕР ДЛЯ УПРАВЛЕНИЯ */}
-      <div className="app-controls-container">
+      {/* <div className="app-controls-container"> */}
         <ControlButton
           isGameRunning={state.isGameRunning}
           onMainButtonClick={handleMainButtonClick}
           onSettingsButtonClick={() => setShowSettings(true)}
         />
-      </div>
+      {/* </div> */}
 
       {/* Модальное окно настроек */}
       {showSettings && (
