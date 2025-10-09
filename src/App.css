@@ -25,34 +25,6 @@ html, body, #root {
   overflow: hidden;
 }
 
-/* Ландшафтная ориентация */
-@media (orientation: landscape) {
-  .time-displays {
-    flex-direction: row;
-  }
-  
-  .time-display {
-    width: 50vw;
-    height: 100vh;
-    transform: none !important;
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-  }
-  
-  .time-display.player1 {
-    transform: rotate(180deg) !important; 
-  }
-   
-  
-  .time-display.player2 {
-    transform: rotate(180deg) !important; 
-  }
-  
-  /* .time-content {
-    transform: rotate(180deg);
-  } */
-}
-
 .time-displays {
   flex: 1;
   display: flex;
@@ -483,4 +455,13 @@ html, body, #root {
   .time-input-group {
     margin-bottom: 10px;
   }
+}
+
+/* Поворот текста для вертикального отображения */
+.time-display.player1 .time-content {
+  transform: rotate(90deg);
+}
+
+.time-display.player2 .time-content {
+  transform: rotate(-90deg);
 }
