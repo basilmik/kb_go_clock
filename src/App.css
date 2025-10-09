@@ -48,9 +48,9 @@ html, body, #root {
     transform: none !important;
   }
   
-  /* .time-content {
-    transform: rotate(0deg);
-  } */
+  .time-content {
+    transform: rotate(180deg);
+  }
 }
 
 .time-displays {
