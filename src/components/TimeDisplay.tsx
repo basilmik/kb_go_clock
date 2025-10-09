@@ -61,13 +61,13 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
       switch (mode) {
         case 'fischer':
           return (
-            <div style={{ fontSize: '4rem', color: '#06205b', marginTop: '5px' }}>
+            <div style={{ fontSize: '3rem', color: '#06205b', marginTop: '5px' }}>
               +{playerTime.additionalTime}
             </div>
           );
         case 'byoyomi':
           return (
-            <div style={{ fontSize: '4rem', color: '#06205b', marginLeft: '50px' }}>
+            <div style={{ fontSize: '3rem', color: '#06205b', marginLeft: '50px' }}>
               {playerTime.currentPeriod === -1 ? playerTime.byoyomiPeriods : playerTime.currentPeriod} × {playerTime.additionalTime}
             </div>
           );
@@ -106,7 +106,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
         {/* {renderMainTimeInfo()} */}
         
         <div style={{
-          fontSize: 'clamp(8rem, 10vw, 4rem)',
+          fontSize: 'clamp(6rem, 10vw, 4rem)',
           fontWeight: 'bold',
           color: getTextColor(),
           textAlign: 'center',
