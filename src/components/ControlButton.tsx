@@ -22,7 +22,7 @@ const ControlButton: React.FC<ControlButtonProps> = ({
         onSettingsButtonClick();
         setShowSettingsHint(false);
       }
-    }, 1000); // Изменено с 2000 на 1000 мс (1 секунда)
+    }, 1000); // 1 секунда
     
     setShowSettingsHint(true);
   }, [onSettingsButtonClick]);
@@ -38,7 +38,7 @@ const ControlButton: React.FC<ControlButtonProps> = ({
 
   return (
     <>
-      {/* Основная кнопка старта/стопа - в центре */}
+      {/* Основная кнопка старта/стопа */}
       <div className="control-buttons-container">
         <button
           className={`main-control-button ${isGameRunning ? 'stop' : 'start'}`}
@@ -48,7 +48,7 @@ const ControlButton: React.FC<ControlButtonProps> = ({
         </button>
       </div>
 
-      {/* Кнопка настроек - отдельно у правого края */}
+      {/* Кнопка настроек - фиксированная позиция относительно основной */}
       <div className="settings-button-container">
         <button
           className="settings-button"

@@ -33,22 +33,36 @@ html, body, #root {
   height: 100%;
 }
 
-/* Контейнер для основной кнопки управления */
+/* ФИКСИРОВАННЫЙ КОНТЕЙНЕР ДЛЯ УПРАВЛЕНИЯ */
+.app-controls-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* Основная кнопка старта/стопа - фиксированная позиция */
 .control-buttons-container {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 10;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: auto;
+  width: 80px;
+  height: 80px;
 }
 
-/* Основная кнопка старта/стопа */
 .main-control-button {
-  width: 200px;
-  height: 80px;
+  width: 80px !important;
+  height: 80px !important;
   border-radius: 10%;
   border: none;
   background: linear-gradient(145deg, #57b3e4, #57b3e4);
@@ -65,6 +79,7 @@ html, body, #root {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  pointer-events: auto;
 }
 
 .main-control-button.stop {
@@ -76,25 +91,27 @@ html, body, #root {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Контейнер для кнопки настроек - ОТДЕЛЬНО от основной кнопки */
+/* Кнопка настроек - фиксированная позиция у правого края экрана */
 .settings-button-container {
-  position: absolute;
-  top: 37.5%;
+  position: fixed;
+  top: 50%;
   right: 0;
-  /* transform: translateY(-50%); */
-  transform: translateX(40%);
+  transform: translateY(-50%);
   z-index: 10;
+  width: 120px; /* В 2 раза больше */
+  height: 120px; /* В 2 раза больше */
+  pointer-events: auto;
+  overflow: hidden;
 }
 
-/* Кнопка настроек (полукруг у правого края) */
 .settings-button {
-  width: 200px;
-  height: 200px;
-  border-radius:100px 100px 100px 100px; /* Только левые углы скруглены */
+  width: 120px !important;
+  height: 120px !important;
+  border-radius: 50%;
   border: none;
   background: linear-gradient(145deg, #06205b, #57b3e4);
   color: white;
-  font-size: 5rem;
+  font-size: 3rem; /* Увеличим шрифт пропорционально */
   cursor: pointer;
   box-shadow: -3px 0 10px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
@@ -107,10 +124,13 @@ html, body, #root {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  pointer-events: auto;
+  /* Смещаем кнопку вправо так, чтобы было видно только половину */
+  transform: translateX(60px); /* Смещаем на половину ширины (120px / 2) */
 }
 
 .settings-button:active {
-  transform: scale(0.95);
+  transform: translateX(60px) scale(0.95);
 }
 
 /* Подсказка для кнопки настроек */
@@ -159,22 +179,26 @@ html, body, #root {
 .settings-modal {
   background: white;
   border-radius: 12px;
-  width: 100%;
-  max-width: 500px;
-  max-height: 95vh;
+  width: 500px;
+  height: auto;
+  max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.3s ease;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(50px);
+    transform: translate(-50%, -40%);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, -50%);
   }
 }
 
@@ -213,7 +237,7 @@ html, body, #root {
   color: #333;
 }
 
-/* Стили для панели управления - НОВАЯ СТРУКТУРА */
+/* Стили для панели управления */
 .control-panel {
   padding: 15px;
   display: flex;
@@ -381,72 +405,17 @@ html, body, #root {
   background: #1976d2;
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
-  .main-control-button {
-    width: 70px;
-    height: 70px;
-    font-size: 1.7rem;
-  }
-  
-  .settings-button {
-    width: 50px;
-    height: 50px;
-    font-size: 1.3rem;
-  }
-  
+/* Адаптивность только для модального окна */
+@media (max-width: 520px) {
   .settings-modal {
-    margin: 5px;
-    max-height: 90vh;
-  }
-  
-  .players-settings-container {
-    flex-direction: column;
+    width: 95vw;
+    margin: 0;
   }
 }
 
-/* Стили для мобильных устройств */
-@media (max-width: 480px) {
-  .main-control-button {
-    width: 60px;
-    height: 60px;
-    font-size: 1.5rem;
-  }
-  
-  .settings-button {
-    width: 45px;
-    height: 45px;
-    font-size: 1.2rem;
-  }
-  
-  .settings-hint {
-    font-size: 0.7rem;
-    top: -35px;
-  }
-  
-  .control-panel {
-    padding: 10px;
-  }
-  
-  .player-settings {
-    padding: 10px;
-  }
-  
-  .top-controls {
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .mode-select,
-  .reset-button {
-    width: 100%;
-  }
-}
-
-/* Для очень маленьких экранов */
 @media (max-height: 600px) {
   .settings-modal {
-    max-height: 98vh;
+    max-height: 90vh;
   }
   
   .player-settings {
@@ -457,9 +426,8 @@ html, body, #root {
     margin-bottom: 10px;
   }
 }
+
 /* Поворот текста для вертикального отображения */
-
-
 .time-display.player1 .time-content {
   transform: rotate(-90deg);
 }

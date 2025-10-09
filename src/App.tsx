@@ -51,13 +51,6 @@ const App: React.FC = () => {
           playerTime={state.player1}
         />
         
-        {/* Центральная кнопка управления */}
-        <ControlButton
-          isGameRunning={state.isGameRunning}
-          onMainButtonClick={handleMainButtonClick}
-          onSettingsButtonClick={() => setShowSettings(true)}
-        />
-        
         <TimeDisplay
           time={state.player2.currentTime}
           isRunning={state.player2.isRunning}
@@ -67,6 +60,15 @@ const App: React.FC = () => {
           isGameRunning={state.isGameRunning}
           mode={state.mode}
           playerTime={state.player2}
+        />
+      </div>
+
+      {/* ФИКСИРОВАННЫЙ КОНТЕЙНЕР ДЛЯ УПРАВЛЕНИЯ */}
+      <div className="app-controls-container">
+        <ControlButton
+          isGameRunning={state.isGameRunning}
+          onMainButtonClick={handleMainButtonClick}
+          onSettingsButtonClick={() => setShowSettings(true)}
         />
       </div>
 
